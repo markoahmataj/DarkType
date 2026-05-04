@@ -3,7 +3,6 @@
 import { useSearchParams, useRouter } from 'next/navigation'
 import { resultTypes, type ResultType } from '@/lib/quiz-data'
 import { Disclaimer } from '@/components/Disclaimer'
-import { useState } from 'react'
 import { Lock } from 'lucide-react'
 
 const validTypes: ResultType[] = ['strategist', 'charmer', 'rebel', 'ghost', 'mirror', 'protector']
@@ -11,7 +10,6 @@ const validTypes: ResultType[] = ['strategist', 'charmer', 'rebel', 'ghost', 'mi
 export function ResultClient() {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
 
   const type = searchParams.get('type') as ResultType | null
   const isValidType = type && validTypes.includes(type)
@@ -35,23 +33,8 @@ export function ResultClient() {
 
   const result = resultTypes[type]
 
-  const handleUnlock = async () => {
-    setIsLoading(true)
-    try {
-      const response = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ resultType: type }),
-      })
-
-      const data = await response.json()
-      if (data.url) {
-        window.location.href = data.url
-      }
-    } catch (error) {
-      console.error('Checkout error:', error)
-      setIsLoading(false)
-    }
+  const handleUnlock = () => {
+    window.location.href = `https://payhip.com/b/MpmTc?ref=${type}`
   }
 
   return (
@@ -122,10 +105,9 @@ export function ResultClient() {
               <p className="text-gray-300 mb-6">Unlock your full personality report</p>
               <button
                 onClick={handleUnlock}
-                disabled={isLoading}
-                className="w-full px-8 py-4 bg-gradient-accent text-white font-bold rounded-lg hover:shadow-lg hover:shadow-red-600/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-8 py-4 bg-gradient-accent text-white font-bold rounded-lg hover:shadow-lg hover:shadow-red-600/50 transition-all"
               >
-                {isLoading ? 'Redirecting...' : 'Unlock Full Report'}
+                Continue to unlock your full report
               </button>
               <p className="text-xs text-gray-400 mt-4">Secure payment via Stripe</p>
             </div>
