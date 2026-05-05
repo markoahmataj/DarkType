@@ -11,14 +11,18 @@ const config: Config = {
         dark: {
           950: '#0a0a0a',
           900: '#111111',
-          800: '#1a1a1a',
-          700: '#2a2a2a',
-        }
+          800: '#141414',
+          700: '#1a1a1a',
+          600: '#8a8a8a',
+        },
+        accent: '#e63946',
       },
-      backgroundImage: {
-        'gradient-dark': 'linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #2a2a2a 100%)',
-        'gradient-accent': 'linear-gradient(135deg, #7c3aed 0%, #dc2626 100%)',
-      }
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+      },
+      boxShadow: {
+        'glow-red': '0 0 24px rgba(230, 57, 70, 0.12)',
+      },
     },
   },
   plugins: [],
