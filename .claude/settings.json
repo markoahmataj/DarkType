@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd /d \"C:\\\\Claude\\\\DarkType\")",
+      "Bash(npm run *)",
+      "Bash(npx tsc *)",
+      "Bash(Get-ChildItem -Recurse app/quiz,app/result,app/reports -Filter \"page.tsx\")",
+      "Bash(Select-Object FullName)",
+      "Bash(node -e \"const {testRegistry} = require\\('./lib/test-registry'\\); console.log\\(Object.keys\\(testRegistry\\)\\)\")",
+      "Bash(Get-ChildItem -Path \"c:\\\\Claude\\\\DarkType\\\\app\\\\api\" -Recurse)"
+    ]
+  }
+}

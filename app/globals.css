@@ -28,6 +28,7 @@ body {
   font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
 }
 
 ::selection {
@@ -45,12 +46,22 @@ button, a {
   transition-duration: 200ms;
 }
 
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+p {
+  letter-spacing: 0.005em;
+}
+
 .disclaimer {
   font-size: 0.7rem;
   color: #555;
-  margin-top: 3rem;
-  padding: 1.25rem;
+  margin-top: 4rem;
+  padding: 1.5rem;
   background: transparent;
   text-align: center;
   letter-spacing: 0.02em;
+  line-height: 1.6;
 }

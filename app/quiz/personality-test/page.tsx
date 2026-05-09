@@ -69,7 +69,7 @@ export default function PersonalityTestPage() {
   }
 
   return (
-    <main className="min-h-screen bg-dark-950 flex flex-col px-4 py-12">
+    <main className="min-h-screen bg-dark-950 flex flex-col px-4 py-16">
       <motion.div
         className="max-w-xl w-full mx-auto flex flex-col flex-grow"
         initial={{ opacity: 0 }}
@@ -78,13 +78,13 @@ export default function PersonalityTestPage() {
       >
         {/* Progress */}
         <motion.div
-          className="mb-12"
+          className="mb-16"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.4 }}
         >
-          <div className="flex justify-between items-center mb-3">
-            <span className="text-xs text-[#555]">
+          <div className="flex justify-between items-center mb-4">
+            <span className="text-xs text-[#666] font-medium tracking-wide">
               {currentQuestion + 1} / {questions.length}
             </span>
             <motion.span
@@ -96,7 +96,7 @@ export default function PersonalityTestPage() {
               {Math.round(progress)}%
             </motion.span>
           </div>
-          <div className="w-full h-[2px] bg-[#1a1a1a] rounded-full overflow-hidden">
+          <div className="w-full h-1 bg-[#1a1a1a] rounded-full overflow-hidden">
             <motion.div
               className="h-full bg-[#e63946]"
               initial={{ width: 0 }}
@@ -110,14 +110,14 @@ export default function PersonalityTestPage() {
         <AnimatePresence mode="wait">
           <motion.div
             key={currentQuestion}
-            className="mb-14 flex-grow"
+            className="mb-16 flex-grow"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.3 }}
           >
             <motion.h2
-              className="text-2xl md:text-3xl font-bold text-[#f3f3f3] mb-10 leading-snug"
+              className="text-3xl md:text-4xl font-bold text-[#f3f3f3] mb-12 leading-tight tracking-tighter"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.05, duration: 0.4 }}
@@ -125,15 +125,15 @@ export default function PersonalityTestPage() {
               {question.text}
             </motion.h2>
 
-            <div className="space-y-3">
+            <div className="space-y-4">
               {question.answers.map((answer, index) => (
                 <motion.button
                   key={index}
                   onClick={() => handleSelectAnswer(index)}
-                  className={`w-full p-5 text-left rounded-lg border font-medium text-sm leading-relaxed transition-colors duration-150 ${
+                  className={`w-full p-6 text-left rounded-lg border font-medium text-sm leading-relaxed transition-colors duration-150 ${
                     selectedAnswer === index
                       ? 'bg-[#141414] border-[#e63946] text-[#f3f3f3]'
-                      : 'bg-[#111111] border-white/[.08] text-[#8a8a8a] hover:border-white/[.18] hover:text-[#f3f3f3]'
+                      : 'bg-[#111111] border-white/[.08] text-[#8a8a8a] hover:border-white/[.12] hover:text-[#f3f3f3] hover:bg-[#121212]'
                   }`}
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -149,7 +149,7 @@ export default function PersonalityTestPage() {
 
         {/* Navigation */}
         <motion.div
-          className="flex gap-4 justify-between items-center pt-4"
+          className="flex gap-4 justify-between items-center pt-8"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.4 }}
@@ -157,13 +157,13 @@ export default function PersonalityTestPage() {
           <motion.button
             onClick={handleBack}
             disabled={currentQuestion === 0}
-            className={`flex items-center gap-2 px-5 py-3 rounded-lg text-sm font-semibold border ${
+            className={`flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-medium border transition-all duration-150 ${
               currentQuestion === 0
                 ? 'border-white/[.04] text-[#333] cursor-not-allowed'
-                : 'border-white/[.14] text-[#8a8a8a] hover:bg-white/[.06] hover:text-[#f3f3f3]'
+                : 'border-white/[.12] text-[#8a8a8a] hover:bg-white/[.05] hover:border-white/[.16] hover:text-[#f3f3f3]'
             }`}
-            whileHover={currentQuestion > 0 ? { scale: 1.03 } : {}}
-            whileTap={currentQuestion > 0 ? { scale: 0.97 } : {}}
+            whileHover={currentQuestion > 0 ? { scale: 1.02 } : {}}
+            whileTap={currentQuestion > 0 ? { scale: 0.98 } : {}}
           >
             <ChevronLeft size={16} />
             Back
@@ -173,22 +173,22 @@ export default function PersonalityTestPage() {
             {selectedAnswer !== null ? (
               <motion.span
                 key="selected"
-                className="text-xs text-[#555]"
+                className="text-xs text-[#555] font-medium"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
-                ✓ Selected
+                ✓ Answered
               </motion.span>
             ) : (
               <motion.span
                 key="unselected"
-                className="text-xs text-[#555]"
+                className="text-xs text-[#555] font-medium"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
-                Choose an answer
+                Select an answer
               </motion.span>
             )}
           </AnimatePresence>
@@ -196,15 +196,15 @@ export default function PersonalityTestPage() {
           <motion.button
             onClick={handleNext}
             disabled={selectedAnswer === null}
-            className={`flex items-center gap-2 px-7 py-3 rounded-lg text-sm font-bold ${
+            className={`flex items-center gap-2 px-8 py-3 rounded-lg text-sm font-bold transition-all duration-150 ${
               selectedAnswer === null
                 ? 'bg-[#1a1a1a] text-[#333] cursor-not-allowed'
                 : 'bg-[#f3f3f3] text-[#050505] hover:opacity-90'
             }`}
-            whileHover={selectedAnswer !== null ? { scale: 1.03 } : {}}
-            whileTap={selectedAnswer !== null ? { scale: 0.97 } : {}}
+            whileHover={selectedAnswer !== null ? { scale: 1.02 } : {}}
+            whileTap={selectedAnswer !== null ? { scale: 0.98 } : {}}
           >
-            {currentQuestion === questions.length - 1 ? 'See My Result' : 'Next'}
+            {currentQuestion === questions.length - 1 ? 'See Result' : 'Next'}
             <ChevronRight size={16} />
           </motion.button>
         </motion.div>

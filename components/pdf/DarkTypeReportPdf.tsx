@@ -27,6 +27,11 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     marginBottom: 10,
   },
+  testLabel: {
+    fontSize: 10,
+    color: '#9ca3af',
+    marginBottom: 6,
+  },
   subtitle: {
     fontSize: 12,
     color: '#d1d5db',
@@ -79,15 +84,17 @@ const styles = StyleSheet.create({
 interface DarkTypeReportPdfProps {
   report: FullReport
   displayName: string
+  testName?: string
 }
 
-export function DarkTypeReportPdf({ report, displayName }: DarkTypeReportPdfProps) {
+export function DarkTypeReportPdf({ report, displayName, testName }: DarkTypeReportPdfProps) {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.brand}>DARKTYPE</Text>
+          {testName && <Text style={styles.testLabel}>{testName}</Text>}
           <Text style={styles.title}>{displayName}</Text>
           <Text style={styles.subtitle}>Your Psychological Profile</Text>
         </View>

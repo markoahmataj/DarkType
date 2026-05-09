@@ -1,18 +1,23 @@
 import { Stripe } from 'stripe'
 import { NextRequest, NextResponse } from 'next/server'
+import { testRegistry } from '@/lib/test-registry'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
-
-const validTypes = ['strategist', 'charmer', 'rebel', 'ghost', 'mirror', 'protector']
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { resultType } = body
+    const { resultType, testSlug = 'personality-test' } = body
 
-    if (!resultType || !validTypes.includes(resultType)) {
+    const testConfig = testRegistry[testSlug]
+    if (!testConfig || !resultType || !testConfig.validTypes.includes(resultType)) {
       return NextResponse.json({ error: 'Invalid result type' }, { status: 400 })
     }
+
+    const isPersonalityTest = testSlug === 'personality-test'
+    const cancelUrl = isPersonalityTest
+      ? `${process.env.NEXT_PUBLIC_APP_URL}/reports/${resultType}`
+      : `${process.env.NEXT_PUBLIC_APP_URL}/reports/${testSlug}/${resultType}`
 
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
@@ -22,7 +27,7 @@ export async function POST(request: NextRequest) {
           price_data: {
             currency: 'eur',
             product_data: {
-              name: 'DarkType Full Personality Report',
+              name: 'DarkType Full Psychological Report',
             },
             unit_amount: 99,
           },
@@ -30,9 +35,10 @@ export async function POST(request: NextRequest) {
         },
       ],
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/result?type=${resultType}`,
+      cancel_url: cancelUrl,
       metadata: {
         resultType,
+        testSlug,
       },
     })
 

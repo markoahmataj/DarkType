@@ -1,12 +1,12 @@
 import { Stripe } from 'stripe'
-import { reports, type FullReport } from '@/lib/report-data'
-import { resultTypes, type ResultType } from '@/lib/quiz-data'
+import { type ResultType } from '@/lib/quiz-data'
+import { testRegistry } from '@/lib/test-registry'
 import Link from 'next/link'
 import { SuccessClient } from '@/components/SuccessClient'
+import { TestSuccessClient } from '@/components/TestSuccessClient'
+import { type FullReport } from '@/lib/report-data'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
-
-const validTypes: ResultType[] = ['strategist', 'charmer', 'rebel', 'ghost', 'mirror', 'protector']
 
 interface SuccessPageProps {
   searchParams: Promise<{ session_id?: string }>
@@ -45,13 +45,40 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
     return <ErrorState title="Payment Not Completed" body="Your payment was not processed." />
   }
 
-  const resultType = (session.metadata?.resultType as ResultType) || null
-  if (!resultType || !validTypes.includes(resultType)) {
+  const resultType = session.metadata?.resultType || null
+  const testSlug = session.metadata?.testSlug || 'personality-test'
+
+  const testConfig = testRegistry[testSlug]
+  if (!testConfig || !resultType || !testConfig.validTypes.includes(resultType)) {
     return <ErrorState title="Invalid Result Type" body="Something went wrong." />
   }
 
-  const report = reports[resultType]
-  const displayName = resultTypes[resultType].displayName
+  const report = testConfig.getReport(resultType)
+  const displayName = testConfig.getDisplayName(resultType)
 
-  return <SuccessClient report={report} displayName={displayName} sessionId={session_id} resultType={resultType} />
+  if (!report || !displayName) {
+    return <ErrorState title="Report Not Found" body="Something went wrong." />
+  }
+
+  if (testSlug === 'personality-test') {
+    return (
+      <SuccessClient
+        report={report as FullReport}
+        displayName={displayName}
+        sessionId={session_id}
+        resultType={resultType as ResultType}
+      />
+    )
+  }
+
+  return (
+    <TestSuccessClient
+      report={report as FullReport}
+      displayName={displayName}
+      sessionId={session_id}
+      resultType={resultType}
+      testSlug={testSlug}
+      testName={testConfig.testName}
+    />
+  )
 }

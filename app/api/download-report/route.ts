@@ -3,31 +3,28 @@ import { NextRequest, NextResponse } from 'next/server'
 import { Stripe } from 'stripe'
 import { renderToBuffer } from '@react-pdf/renderer'
 import { DarkTypeReportPdf } from '@/components/pdf/DarkTypeReportPdf'
-import { reports, type FullReport } from '@/lib/report-data'
-import { resultTypes, type ResultType } from '@/lib/quiz-data'
+import { testRegistry } from '@/lib/test-registry'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
-
-const validTypes: ResultType[] = ['strategist', 'charmer', 'rebel', 'ghost', 'mirror', 'protector']
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { sessionId, resultType } = body
+    const { sessionId, resultType, testSlug = 'personality-test' } = body
 
     if (!sessionId) {
       return NextResponse.json({ error: 'Session ID required' }, { status: 400 })
     }
 
-    if (!resultType || !validTypes.includes(resultType)) {
-      return NextResponse.json({ error: 'Invalid result type' }, { status: 400 })
+    const testConfig = testRegistry[testSlug]
+    if (!testConfig || !resultType || !testConfig.validTypes.includes(resultType)) {
+      return NextResponse.json({ error: 'Invalid test or result type' }, { status: 400 })
     }
 
-    // Verify Stripe session and payment
     let session
     try {
       session = await stripe.checkout.sessions.retrieve(sessionId)
-    } catch (error) {
+    } catch {
       return NextResponse.json({ error: 'Invalid session' }, { status: 400 })
     }
 
@@ -35,20 +32,27 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Payment not completed' }, { status: 403 })
     }
 
-    // Get report data
-    const report: FullReport = reports[resultType as ResultType]
-    const displayName = resultTypes[resultType as ResultType].displayName
+    const report = testConfig.getReport(resultType)
+    const displayName = testConfig.getDisplayName(resultType)
 
-    // Generate PDF
+    if (!report || !displayName) {
+      return NextResponse.json({ error: 'Report not found' }, { status: 404 })
+    }
+
     const pdfBuffer = await renderToBuffer(
-      React.createElement(DarkTypeReportPdf, { report, displayName }) as any
+      React.createElement(DarkTypeReportPdf, {
+        report,
+        displayName,
+        testName: testConfig.testName,
+      }) as any
     )
 
-    // Return PDF as downloadable file
+    const filename = `darktype-${testSlug}-${resultType}-report.pdf`
+
     return new Response(Buffer.from(pdfBuffer), {
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="DarkType-${resultType}.pdf"`,
+        'Content-Disposition': `attachment; filename="${filename}"`,
       },
     })
   } catch (error) {
